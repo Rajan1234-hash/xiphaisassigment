@@ -19,22 +19,11 @@ const [dataphoto,setphotodata]=useState([])
 const [dataalbum,setdataalbum]=useState([])
   // GET request for remote image in node.js
 
-  useEffect(()=>{
-    callalbums();
-    callphoto();
-// console.log("myState",myState)
-
-  },[])
-
-  useEffect(()=>{
-    // console.log("myState",myState.Photocall.data)
-    setphotodata(myState.Photocall.data)
-    setdataalbum(myState.AlbumCall.data)
-  })
   
-  useEffect(()=>{
-    // if()
-  })
+
+ useLayoutEffect(()=>{
+  callphoto();
+ },[])
 
   const callphoto=()=>{
     axios({
@@ -42,26 +31,49 @@ const [dataalbum,setdataalbum]=useState([])
       url: 'https://jsonplaceholder.typicode.com/photos',
       responseType: 'stream'
     }).then((data)=>{
-      dispatch(Photoresponse(data));
+      // dispatch(Photoresponse(data));
       
       // setphotodata([...dataphoto,data])
     console.log("data photo",data.data)
+    callalbums(data)
     }).then(()=>{
       // console.log("myState",myState)
     }).catch((err)=>{
       console.log(err)
     })
   }
-  const callalbums=()=>{
+  const callalbums=(getphotodata)=>{
     axios({
       method: 'get',
       url: 'https://jsonplaceholder.typicode.com/photos',
       responseType: 'stream'
     }).then((data)=>{
-      dispatch(Albumrespo(data));
+      // dispatch(Albumrespo(data));
       
-      // setdataalbum([...dataalbum,data])
-    console.log(" daata album",data)
+      let photdata=getphotodata;
+      let arr=[];
+
+      if(photdata){
+        photdata.data.map((item,i)=>{
+          if(data){
+            data.data.map((itemalbum,index)=>{
+              if(itemalbum.albumId==item.id)
+              arr.push({
+                "title":itemalbum.title,
+                "image":item.thumbnailUrl,
+                "subtitle":item.title,
+                "heading":""
+              })
+              // console.log("itemalbum",itemalbum)
+            })
+          }
+        })
+      }
+      setphotodata(arr)
+      console.log("arr",arr)
+      dispatch(Photoresponse(arr));
+    // console.log(" daata album",data)
+
     }).catch((err)=>{
       console.log(err)
     })
@@ -70,21 +82,22 @@ const [dataalbum,setdataalbum]=useState([])
   
   return (
     <div className="main p-4">
-      {dataphoto?
+      <div className="">
+        <div className="float-left text-left"><h5>Albums</h5></div>
+          </div>
+      {myState.Photocall?
       
-      dataphoto.map((item,i)=>{
+      myState.Photocall.map((item,i)=>{
         return(
-          <div className="row">
+          <div className="row my-2 bg-light p-2"  style={{borderRadius:"20px"}}>
       
-          <div className="col-md-12">
-          <div className="float-left text-left"><h5>Title</h5></div>
+          
+          <div className="col-md-1 col-12">
+            <img src={item.image} width="100" style={{borderRadius:"15px"}} />
           </div>
-          <div className="col-1">
-            <img src={item.thumbnailUrl} width="100" />
-          </div>
-          <div className="col-6">
-        <h6>{item.id}</h6>
-        <small>{item.title}</small>
+          <div className="col-md-6 col-12">
+        <h6>{item.title}</h6>
+        <small>{item.subtitle}</small>
           </div>
         </div>
     
