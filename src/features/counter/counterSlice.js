@@ -34,12 +34,10 @@ export const counterSlice = createSlice({
     },
     decrement: (state) => {
       state.value -= 1;
-     
     },
     // Use the PayloadAction type to declare the contents of `action.payload`
     incrementByAmount: (state, action) => {
       state.value += action.payload;
-      alert(JSON.stringify(action))
     },
   },
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -66,7 +64,6 @@ export const selectCount = (state) => state.counter.value;
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
 export const incrementIfOdd = (amount) => (dispatch, getState) => {
- 
   const currentValue = selectCount(getState());
   if (currentValue % 2 === 1) {
     dispatch(incrementByAmount(amount));
